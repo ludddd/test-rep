@@ -3,7 +3,7 @@ import _winreg
     
 
 def getUnityPath():
-    regkey = _winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'SOFTWARE\\Unity Technologies\\Installer\\Unity')
+    regkey = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, 'SOFTWARE\\Unity Technologies\\Installer\\Unity')
     path = _winreg.QueryValueEx(regkey, 'Location x64')[0]
     path = os.path.join(path, 'Editor', 'Unity.exe')
     return path.replace('\\', '/')

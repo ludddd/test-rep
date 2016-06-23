@@ -18,7 +18,12 @@ public class BuildGame {
 	}
 
 	public static void Build(BuildTarget target) {
-		BuildPipeline.BuildPlayer (GetScenes (), GetTargetPath (target), target, BuildOptions.None);
+		var targetPath = GetTargetPath (target);
+		var baseTargetDir = Path.GetDirectoryName (targetPath);
+		if (!Directory.Exists(baseTargetDir)) {
+			Directory.CreateDirectory (baseTargetDir);
+		}
+		BuildPipeline.BuildPlayer (GetScenes (), targetPath, target, BuildOptions.None);
 	}
 
 	public static string[] GetScenes()
@@ -37,10 +42,10 @@ public class BuildGame {
 	{
 		switch (target) {
 		case BuildTarget.Android:
-			return "game.apk";
+			return "build/android/game.apk";
 		case BuildTarget.StandaloneWindows:
 		case BuildTarget.StandaloneWindows64:
-			return "game.exe";
+			return "build/win32/game.exe";
 		default:
 			throw new System.ArgumentOutOfRangeException ();
 		}

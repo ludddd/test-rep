@@ -4,7 +4,7 @@ try:
     import _winreg as winreg
 except ImportError:
     import winreg as winreg
-import zipfile	
+import shutil	
     
 platform = 'win32'
 if len(sys.argv) > 1:
@@ -17,34 +17,17 @@ def getUnityPath():
     path = os.path.join(path, 'Editor', 'Unity.exe')
     return path.replace('\\', '/')
 
-#unityPath = '"D:/Program Files/Unity/Editor/Unity.exe"'
 unityPath = '"%s"' % getUnityPath()
 print(unityPath)
 
-targetName = './test_auto'
-
-def getExeName(name):
-	return name + '.exe'
-	
-def getDataFolderName(name):
-	return name + '_Data'
-
 projectPath = os.path.abspath('./test')
-buildTarget = {'win32' : 'BuildGame.BuildWindows', 'android' : 'BuildGame.BuildAndroid'}
-#-buildWindowsPlayer
-#cmd = '%s -batchmode -projectPath %s -buildTarget %s %s -quit' % (unityPath, projectPath, buildTarget[platform], getExeName(targetName))
-cmd = '%s -batchmode -projectPath %s -executeMethod %s -quit' % (unityPath, projectPath, buildTarget[platform])
+buildMethod = {'win32' : 'BuildGame.BuildWindows', 'android' : 'BuildGame.BuildAndroid'}
+cmd = '%s -batchmode -projectPath %s -executeMethod %s -quit' % (unityPath, projectPath, buildMethod[platform])
 print(cmd)
 os.system(cmd)
 
-def packResult(name):
-	z = zipfile.ZipFile('build_win32.zip', 'w')
-	z.write(getExeName(name))
-	for root, _, filenames in os.walk(getDataFolderName(name)):
-		for name in filenames:
-			name = os.path.join(root, name)
-			name = os.path.normpath(name)
-			z.write(name, name)
-	z.close()
+def packResult(platform):
+	src_path = os.path.join('./test', 'build', platform)
+	shutil.make_archive('build', 'zip', src_path)
 	
-packResult('test/' + targetName)	
+packResult(platform)	

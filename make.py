@@ -1,10 +1,15 @@
 import os
+import sys 
 try:
     import _winreg as winreg
 except ImportError:
     import winreg as winreg
 import zipfile	
     
+platform = 'win32'
+if len(sys.argv) > 1:
+	platform = sys.argv[1]
+print('building for platform %s' % platform)	
 
 def getUnityPath():
     regkey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, 'SOFTWARE\\Unity Technologies\\Installer\\Unity')
@@ -25,7 +30,10 @@ def getDataFolderName(name):
 	return name + '_Data'
 
 projectPath = os.path.abspath('./test')
-cmd = '%s -batchmode -projectPath %s -buildWindowsPlayer %s -quit' % (unityPath, projectPath, getExeName(targetName))
+buildTarget = {'win32' : 'BuildGame.BuildWindows', 'android' : 'BuildGame.BuildAndroid'}
+#-buildWindowsPlayer
+#cmd = '%s -batchmode -projectPath %s -buildTarget %s %s -quit' % (unityPath, projectPath, buildTarget[platform], getExeName(targetName))
+cmd = '%s -batchmode -projectPath %s -executeMethod %s -quit' % (unityPath, projectPath, buildTarget[platform])
 print(cmd)
 os.system(cmd)
 
@@ -39,4 +47,4 @@ def packResult(name):
 			z.write(name, name)
 	z.close()
 	
-packResult(targetName)	
+packResult('test/' + targetName)	
